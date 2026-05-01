@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/src/styles/common.css" />
+    <link rel="stylesheet" href="/src/styles/quick-follow.css" />
+    <title>Quick Follow</title>
+  </head>
+  <body>
+    <main class="quick-follow" id="app">
+      <section class="scanner" aria-labelledby="scanner-title">
+        <h1 class="scanner__title" id="scanner-title">Quick Follow</h1>
+        <video class="scanner__video" id="camera-video" autoplay muted playsinline></video>
+        <figure class="scanner__preview" id="debug-preview" hidden>
+          <span class="scanner__preview-frame">
+            <img class="scanner__preview-image" id="debug-preview-image" alt="アップロード画像" />
+            <span class="scanner__preview-overlay" id="debug-preview-overlay" aria-hidden="true"></span>
+          </span>
+        </figure>
+        <div class="scanner__shade" id="scanner-shade" aria-hidden="true"></div>
+        <div class="scanner__guide" id="camera-guide" aria-hidden="true"></div>
+        <p class="scanner__status" id="status-text" role="status">カメラを開始してください</p>
+      </section>
+
+      <section class="control" aria-label="操作">
+        <button class="control__button" id="start-button" type="button">
+          <svg class="control__icon" aria-hidden="true"><use href="/icons.svg#camera-icon"></use></svg>
+          開始
+        </button>
+        <button class="control__button" id="stop-button" type="button" disabled>
+          <svg class="control__icon" aria-hidden="true"><use href="/icons.svg#stop-icon"></use></svg>
+          停止
+        </button>
+        <label class="control__file" for="upload-input">
+          <svg class="control__icon" aria-hidden="true"><use href="/icons.svg#upload-icon"></use></svg>
+          画像
+        </label>
+        <input class="control__input" id="upload-input" type="file" accept="image/*" />
+        <a class="control__link" id="open-link" href="https://x.com/" hidden rel="noopener">
+          <svg class="control__icon" aria-hidden="true"><use href="/icons.svg#x-icon"></use></svg>
+          開く
+        </a>
+      </section>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
