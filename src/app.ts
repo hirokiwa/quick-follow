@@ -282,6 +282,9 @@ export const initializeApp = (): void => {
   elements.startDialogButton.addEventListener('click', () => {
     void startScanning()
   })
+  elements.startDialogCloseButton.addEventListener('click', () => {
+    elements.startDialog.close()
+  })
   elements.stopButton.addEventListener('click', () => {
     stopScanning()
     renderIdle(elements)

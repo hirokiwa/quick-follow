@@ -195,6 +195,7 @@
 .control__button:focus-visible,
 .control__link:focus-visible,
 .control__file:focus-within,
+.start-dialog__close-button:focus-visible,
 .start-dialog__button:focus-visible,
 .result-dialog__button:focus-visible,
 .result-dialog__link:focus-visible {
@@ -211,6 +212,7 @@
   .control__button:hover:enabled,
   .control__link:hover,
   .control__file:hover,
+  .start-dialog__close-button:hover,
   .start-dialog__button:hover,
   .result-dialog__button:hover,
   .result-dialog__link:hover {
@@ -236,10 +238,33 @@
 
 .start-dialog__body,
 .result-dialog__body {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.625rem;
   padding: 1rem;
+}
+
+.start-dialog__close-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: inline-flex;
+  width: 1.75rem;
+  height: 1.75rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: #ffffff;
+  color: var(--color-action-text);
+  transition: scale 160ms ease, box-shadow 160ms ease;
+}
+
+.start-dialog__close-icon {
+  width: 1rem;
+  height: 1rem;
 }
 
 .start-dialog__title,
