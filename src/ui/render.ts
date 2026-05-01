@@ -10,8 +10,7 @@ const hideDebugPreview = (elements: QuickFollowElements): void => {
   elements.previewImage.removeAttribute('style')
   elements.previewOverlay.replaceChildren()
   elements.video.hidden = false
-  elements.shade.hidden = false
-  elements.guide.hidden = false
+  elements.mockOverlay.hidden = false
 }
 
 const closeResultDialog = (elements: QuickFollowElements): void => {
@@ -136,8 +135,7 @@ export const renderDebugPreview = (
 ): void => {
   elements.preview.hidden = false
   elements.video.hidden = true
-  elements.shade.hidden = true
-  elements.guide.hidden = true
+  elements.mockOverlay.hidden = true
 
   if (!preserveZoom) {
     elements.previewFrame.classList.remove('scanner__preview-frame--zoomed')

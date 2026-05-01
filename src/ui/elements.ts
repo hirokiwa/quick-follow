@@ -1,7 +1,6 @@
 export type QuickFollowElements = {
   readonly video: HTMLVideoElement
-  readonly shade: HTMLElement
-  readonly guide: HTMLElement
+  readonly mockOverlay: HTMLImageElement
   readonly preview: HTMLElement
   readonly previewFrame: HTMLElement
   readonly previewImage: HTMLImageElement
@@ -28,8 +27,7 @@ const queryElement = <ElementType extends HTMLElement>(selector: string): Elemen
 
 export const getQuickFollowElements = (): QuickFollowElements => ({
   video: queryElement<HTMLVideoElement>('#camera-video'),
-  shade: queryElement<HTMLElement>('#scanner-shade'),
-  guide: queryElement<HTMLElement>('#camera-guide'),
+  mockOverlay: queryElement<HTMLImageElement>('#camera-mock-overlay'),
   preview: queryElement<HTMLElement>('#debug-preview'),
   previewFrame: queryElement<HTMLElement>('#debug-preview-frame'),
   previewImage: queryElement<HTMLImageElement>('#debug-preview-image'),
