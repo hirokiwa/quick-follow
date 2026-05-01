@@ -267,8 +267,7 @@
   height: 1rem;
 }
 
-.start-dialog__title,
-.result-dialog__title {
+.start-dialog__title {
   font-size: 0.875rem;
   line-height: 1.2;
   margin: 0;
