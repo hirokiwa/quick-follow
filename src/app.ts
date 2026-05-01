@@ -3,8 +3,8 @@ import { analyzePhoneCanvas } from './analyzeFrame'
 import { startCameraStream, stopCameraStream } from './camera/stream'
 import { createDebugLogger } from './debug/logger'
 import { createPhoneDetector, detectLargestPhone, detectLargestPhoneInImage } from './detection/mediaPipePhoneDetector'
-import { cropPhoneRegionFromCanvas, cropPhoneRegionFromVideo } from './image-processing/phoneRegion'
-import { createCanvasFromFile } from './image-processing/upload'
+import { cropPhoneRegionFromCanvas } from './image-processing/phoneRegion'
+import { createCanvasFromFile, createCanvasFromVideo } from './image-processing/upload'
 import { createOcrWorker, terminateOcrWorker } from './ocr/tesseract'
 import type { Rectangle } from './types'
 import { getQuickFollowElements } from './ui/elements'
@@ -57,6 +57,13 @@ const stopScanning = (): void => {
   state.isAnalyzing = false
 }
 
+const freezeScanning = (): void => {
+  logger.info('freeze scanning')
+  clearAnalysisInterval()
+  stopCameraStream(state.stream)
+  state.stream = undefined
+}
+
 export const initializeApp = (): void => {
   const elements = getQuickFollowElements()
 
@@ -89,8 +96,10 @@ export const initializeApp = (): void => {
         return
       }
 
-      renderStatus(elements, 'スマホ領域を切り出し中')
-      const phoneCanvas = cropPhoneRegionFromVideo(elements.video, phoneDetection.bounds)
+      logger.info('phone detected, analyze current frame', phoneDetection)
+      renderStatus(elements, 'スマホ領域を解析中')
+      const capturedImage = createCanvasFromVideo(elements.video)
+      const phoneCanvas = cropPhoneRegionFromCanvas(capturedImage.sourceCanvas, phoneDetection.bounds)
       renderStatus(elements, '透視補正をスキップ中')
       const result = await analyzePhoneCanvas({
         phoneCanvas,
@@ -101,11 +110,23 @@ export const initializeApp = (): void => {
         },
       })
 
+      logger.info('camera analysis result', result)
+
       if (result.type === 'detected') {
-        stopScanning()
+        freezeScanning()
+        renderZoomedDebugPreview(
+          elements,
+          capturedImage.previewImageUrl,
+          phoneDetection.bounds,
+          capturedImage.naturalWidth,
+          capturedImage.naturalHeight,
+          result.detection.bounds === undefined
+            ? []
+            : [mapBoundsToSource(result.detection.bounds, phoneDetection.bounds, phoneCanvas)],
+        )
         renderDetection(elements, result.detection)
       } else {
-        logger.info('camera analysis result', result)
+        renderStatus(elements, '文字を検出できませんでした')
       }
     } catch (error) {
       logger.error('camera analysis error', error)

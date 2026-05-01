@@ -31,12 +31,32 @@ const drawImageToCanvas = (image: HTMLImageElement): HTMLCanvasElement => {
   return canvas
 }
 
+const drawVideoFrameToCanvas = (video: HTMLVideoElement): HTMLCanvasElement => {
+  const canvas = createCanvas(video.videoWidth, video.videoHeight)
+  const context = getCanvasContext(canvas)
+
+  context.drawImage(video, 0, 0, canvas.width, canvas.height)
+
+  return canvas
+}
+
 export const createCanvasFromFile = async (file: File): Promise<UploadedImageCanvas> => {
   const objectUrl = URL.createObjectURL(file)
   const image = await loadImage(objectUrl).finally(() => {
     URL.revokeObjectURL(objectUrl)
   })
   const sourceCanvas = drawImageToCanvas(image)
+
+  return {
+    previewImageUrl: canvasToImageUrl(sourceCanvas),
+    naturalWidth: sourceCanvas.width,
+    naturalHeight: sourceCanvas.height,
+    sourceCanvas,
+  }
+}
+
+export const createCanvasFromVideo = (video: HTMLVideoElement): UploadedImageCanvas => {
+  const sourceCanvas = drawVideoFrameToCanvas(video)
 
   return {
     previewImageUrl: canvasToImageUrl(sourceCanvas),

@@ -8,17 +8,11 @@ export type PhoneDetection = {
   readonly score: number
 }
 
-type SourceSize = {
-  readonly width: number
-  readonly height: number
-}
-
 const wasmBasePath = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35/wasm'
 const modelAssetPath =
   'https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite0/float16/1/efficientdet_lite0.tflite'
 
 const preferredPhoneLabels = ['cell phone', 'mobile phone', 'phone']
-const secondaryDeviceLabels = ['remote', 'tv', 'laptop', 'book']
 
 const toRectangle = (boundingBox: BoundingBox): Rectangle => ({
   x: boundingBox.originX,
@@ -36,32 +30,23 @@ const getDetectionCategory = (detection: Detection): { readonly label: string; r
   }
 }
 
-const isVerticalLargeObject = (rectangle: Rectangle, sourceSize: SourceSize): boolean =>
-  rectangle.height > sourceSize.height * 0.25 &&
-  rectangle.width > sourceSize.width * 0.08 &&
-  rectangle.height / rectangle.width >= 1.25
+const isPhoneLabel = (label: string): boolean => {
+  const normalizedLabel = label.toLowerCase()
 
-const getCandidateWeight = (detection: Detection, sourceSize: SourceSize): number => {
-  const boundingBox = detection.boundingBox
-  const category = getDetectionCategory(detection)
-  const label = category.label.toLowerCase()
-  const rectangle = boundingBox === undefined ? undefined : toRectangle(boundingBox)
-  const isPreferredPhone = preferredPhoneLabels.some((phoneLabel) => label.includes(phoneLabel))
-  const isSecondaryDevice = secondaryDeviceLabels.some((deviceLabel) => label.includes(deviceLabel))
-  const shapeBonus = rectangle !== undefined && isVerticalLargeObject(rectangle, sourceSize) ? 0.2 : 0
-  const categoryBonus = isPreferredPhone ? 2 : isSecondaryDevice ? 0.6 : 0
-  const area = rectangle === undefined ? 0 : rectangle.width * rectangle.height
-
-  return boundingBox === undefined ? 0 : area * (category.score + categoryBonus + shapeBonus)
+  return preferredPhoneLabels.some((phoneLabel) => normalizedLabel.includes(phoneLabel))
 }
 
-const toPhoneDetection = (
-  detections: readonly Detection[],
-  sourceSize: SourceSize,
-): PhoneDetection | undefined => {
+const getCandidateArea = (detection: Detection): number => {
+  const boundingBox = detection.boundingBox
+  const rectangle = boundingBox === undefined ? undefined : toRectangle(boundingBox)
+
+  return rectangle === undefined ? 0 : rectangle.width * rectangle.height
+}
+
+const toPhoneDetection = (detections: readonly Detection[]): PhoneDetection | undefined => {
   const detection = detections
-    .filter((candidate) => candidate.boundingBox !== undefined)
-    .sort((first, second) => getCandidateWeight(second, sourceSize) - getCandidateWeight(first, sourceSize))[0]
+    .filter((candidate) => candidate.boundingBox !== undefined && isPhoneLabel(getDetectionCategory(candidate).label))
+    .sort((first, second) => getCandidateArea(second) - getCandidateArea(first))[0]
   const boundingBox = detection?.boundingBox
 
   if (detection === undefined || boundingBox === undefined) {
@@ -98,10 +83,7 @@ export const detectLargestPhone = (
 ): PhoneDetection | undefined => {
   const result = detector.detectForVideo(video, timestamp)
 
-  return toPhoneDetection(result.detections, {
-    width: video.videoWidth,
-    height: video.videoHeight,
-  })
+  return toPhoneDetection(result.detections)
 }
 
 export const detectLargestPhoneInImage = (
@@ -110,8 +92,5 @@ export const detectLargestPhoneInImage = (
 ): PhoneDetection | undefined => {
   const result = detector.detect(image)
 
-  return toPhoneDetection(result.detections, {
-    width: image.width,
-    height: image.height,
-  })
+  return toPhoneDetection(result.detections)
 }
