@@ -81,6 +81,25 @@ const calculateZoomTranslation = (
   }
 }
 
+const waitForNextFrame = (): Promise<void> =>
+  new Promise((resolve) => {
+    requestAnimationFrame(() => {
+      resolve()
+    })
+  })
+
+const waitForImageLayout = (image: HTMLImageElement): Promise<void> =>
+  image.complete && image.naturalWidth > 0
+    ? waitForNextFrame()
+    : new Promise((resolve) => {
+        const resolveAfterFrame = (): void => {
+          void waitForNextFrame().then(resolve)
+        }
+
+        image.addEventListener('load', resolveAfterFrame, { once: true })
+        image.addEventListener('error', resolveAfterFrame, { once: true })
+      })
+
 export const renderIdle = (elements: QuickFollowElements): void => {
   closeResultDialog(elements)
   hideDebugPreview(elements)
@@ -181,7 +200,11 @@ export const renderZoomedDebugPreview = (
 ): void => {
   renderDebugPreview(elements, imageUrl, bounds, naturalWidth, naturalHeight, ocrLineBounds, true)
 
-  requestAnimationFrame(() => {
+  void waitForImageLayout(elements.previewImage).then(() => {
+    if (elements.previewImage.src !== imageUrl) {
+      return
+    }
+
     const scale = calculateZoomScale(elements.preview, elements.previewImage, bounds, naturalWidth, naturalHeight)
     const translation = calculateZoomTranslation(elements.previewImage, bounds, naturalWidth, naturalHeight)
 
