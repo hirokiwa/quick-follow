@@ -8,7 +8,7 @@ import { createCanvasFromFile, createCanvasFromVideo } from './image-processing/
 import { createOcrWorker, terminateOcrWorker } from './ocr/tesseract'
 import type { Rectangle } from './types'
 import { getQuickFollowElements } from './ui/elements'
-import { renderAnalyzing, renderDebugPreview, renderDetection, renderError, renderIdle, renderPreparing, renderScanning, renderStatus, renderZoomedDebugPreview } from './ui/render'
+import { renderAnalyzing, renderDebugPreview, renderDetection, renderError, renderIdle, renderPreparing, renderScanning, renderStartDialog, renderStatus, renderZoomedDebugPreview } from './ui/render'
 
 type AppState = {
   stream: MediaStream | undefined
@@ -275,6 +275,9 @@ export const initializeApp = (): void => {
   elements.startButton.addEventListener('click', () => {
     void startScanning()
   })
+  elements.startDialogButton.addEventListener('click', () => {
+    void startScanning()
+  })
   elements.stopButton.addEventListener('click', () => {
     stopScanning()
     renderIdle(elements)
@@ -290,4 +293,5 @@ export const initializeApp = (): void => {
   })
 
   renderIdle(elements)
+  renderStartDialog(elements)
 }

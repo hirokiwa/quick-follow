@@ -19,6 +19,18 @@ const closeResultDialog = (elements: QuickFollowElements): void => {
   }
 }
 
+const closeStartDialog = (elements: QuickFollowElements): void => {
+  if (elements.startDialog.open) {
+    elements.startDialog.close()
+  }
+}
+
+export const renderStartDialog = (elements: QuickFollowElements): void => {
+  if (!elements.startDialog.open) {
+    elements.startDialog.showModal()
+  }
+}
+
 const createPreviewBox = (
   rectangle: Rectangle,
   naturalWidth: number,
@@ -79,6 +91,7 @@ export const renderIdle = (elements: QuickFollowElements): void => {
 }
 
 export const renderScanning = (elements: QuickFollowElements): void => {
+  closeStartDialog(elements)
   closeResultDialog(elements)
   hideDebugPreview(elements)
   elements.startButton.disabled = true
@@ -88,6 +101,7 @@ export const renderScanning = (elements: QuickFollowElements): void => {
 }
 
 export const renderAnalyzing = (elements: QuickFollowElements): void => {
+  closeStartDialog(elements)
   closeResultDialog(elements)
   elements.startButton.disabled = true
   elements.stopButton.disabled = true
@@ -96,6 +110,7 @@ export const renderAnalyzing = (elements: QuickFollowElements): void => {
 }
 
 export const renderPreparing = (elements: QuickFollowElements): void => {
+  closeStartDialog(elements)
   closeResultDialog(elements)
   hideDebugPreview(elements)
   elements.startButton.disabled = true

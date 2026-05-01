@@ -43,6 +43,16 @@
         </a>
       </section>
 
+      <dialog class="start-dialog" id="start-dialog" aria-labelledby="start-title">
+        <section class="start-dialog__body">
+          <h2 class="start-dialog__title" id="start-title">カメラを開始してください</h2>
+          <button class="start-dialog__button" id="start-dialog-button" type="button">
+            <svg class="control__icon" aria-hidden="true"><use href="/icons.svg#camera-icon"></use></svg>
+            開始
+          </button>
+        </section>
+      </dialog>
+
       <dialog class="result-dialog" id="result-dialog" aria-labelledby="result-title">
         <form class="result-dialog__body" method="dialog">
           <h2 class="result-dialog__title" id="result-title">検出しました</h2>

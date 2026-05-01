@@ -10,6 +10,8 @@ export type QuickFollowElements = {
   readonly stopButton: HTMLButtonElement
   readonly uploadInput: HTMLInputElement
   readonly openLink: HTMLAnchorElement
+  readonly startDialog: HTMLDialogElement
+  readonly startDialogButton: HTMLButtonElement
   readonly resultDialog: HTMLDialogElement
   readonly resultHandle: HTMLElement
   readonly resultOpenLink: HTMLAnchorElement
@@ -37,6 +39,8 @@ export const getQuickFollowElements = (): QuickFollowElements => ({
   stopButton: queryElement<HTMLButtonElement>('#stop-button'),
   uploadInput: queryElement<HTMLInputElement>('#upload-input'),
   openLink: queryElement<HTMLAnchorElement>('#open-link'),
+  startDialog: queryElement<HTMLDialogElement>('#start-dialog'),
+  startDialogButton: queryElement<HTMLButtonElement>('#start-dialog-button'),
   resultDialog: queryElement<HTMLDialogElement>('#result-dialog'),
   resultHandle: queryElement<HTMLElement>('#result-handle'),
   resultOpenLink: queryElement<HTMLAnchorElement>('#result-open-link'),

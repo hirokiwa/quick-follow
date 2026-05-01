@@ -158,6 +158,7 @@
 .control__button,
 .control__link,
 .control__file,
+.start-dialog__button,
 .result-dialog__button,
 .result-dialog__link {
   display: inline-flex;
@@ -194,6 +195,7 @@
 .control__button:focus-visible,
 .control__link:focus-visible,
 .control__file:focus-within,
+.start-dialog__button:focus-visible,
 .result-dialog__button:focus-visible,
 .result-dialog__link:focus-visible {
   box-shadow: var(--shadow-focus);
@@ -209,6 +211,7 @@
   .control__button:hover:enabled,
   .control__link:hover,
   .control__file:hover,
+  .start-dialog__button:hover,
   .result-dialog__button:hover,
   .result-dialog__link:hover {
     scale: 0.97;
@@ -216,6 +219,7 @@
   }
 }
 
+.start-dialog,
 .result-dialog {
   width: min(20rem, calc(100vw - 2rem));
   padding: 0;
@@ -225,10 +229,12 @@
   color: var(--color-text);
 }
 
+.start-dialog::backdrop,
 .result-dialog::backdrop {
   background: rgba(0, 0, 0, 0.58);
 }
 
+.start-dialog__body,
 .result-dialog__body {
   display: flex;
   flex-direction: column;
@@ -236,9 +242,11 @@
   padding: 1rem;
 }
 
+.start-dialog__title,
 .result-dialog__title {
   font-size: 0.875rem;
   line-height: 1.2;
+  margin: 0;
 }
 
 .result-dialog__handle {
@@ -256,6 +264,10 @@
 .result-dialog__button,
 .result-dialog__link {
   flex: 1 1 0;
+}
+
+.start-dialog__button {
+  width: 100%;
 }
 
 @media (width <= 480px) {
