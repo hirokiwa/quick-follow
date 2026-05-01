@@ -3,6 +3,7 @@ export type QuickFollowElements = {
   readonly shade: HTMLElement
   readonly guide: HTMLElement
   readonly preview: HTMLElement
+  readonly previewFrame: HTMLElement
   readonly previewImage: HTMLImageElement
   readonly previewOverlay: HTMLElement
   readonly statusText: HTMLElement
@@ -27,6 +28,7 @@ export const getQuickFollowElements = (): QuickFollowElements => ({
   shade: queryElement<HTMLElement>('#scanner-shade'),
   guide: queryElement<HTMLElement>('#camera-guide'),
   preview: queryElement<HTMLElement>('#debug-preview'),
+  previewFrame: queryElement<HTMLElement>('#debug-preview-frame'),
   previewImage: queryElement<HTMLImageElement>('#debug-preview-image'),
   previewOverlay: queryElement<HTMLElement>('#debug-preview-overlay'),
   statusText: queryElement<HTMLElement>('#status-text'),

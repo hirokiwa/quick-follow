@@ -19,6 +19,7 @@ export type OcrTextLine = {
   readonly index: number
   readonly top: number
   readonly bounds: Rectangle
+  readonly characterBounds: readonly Rectangle[]
   readonly confidence: number
 }
 

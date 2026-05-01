@@ -6,9 +6,9 @@ import { createPhoneDetector, detectLargestPhone, detectLargestPhoneInImage } fr
 import { cropPhoneRegionFromCanvas, cropPhoneRegionFromVideo } from './image-processing/phoneRegion'
 import { createCanvasFromFile } from './image-processing/upload'
 import { createOcrWorker, terminateOcrWorker } from './ocr/tesseract'
-import type { OcrTextLine, Rectangle } from './types'
+import type { Rectangle } from './types'
 import { getQuickFollowElements } from './ui/elements'
-import { renderAnalyzing, renderDebugPreview, renderDetection, renderError, renderIdle, renderPreparing, renderScanning, renderStatus } from './ui/render'
+import { renderAnalyzing, renderDebugPreview, renderDetection, renderError, renderIdle, renderPreparing, renderScanning, renderStatus, renderZoomedDebugPreview } from './ui/render'
 
 type AppState = {
   stream: MediaStream | undefined
@@ -31,19 +31,16 @@ const state: AppState = {
   isAnalyzing: false,
 }
 
-const mapOcrLineBoundsToSource = (
-  lines: readonly OcrTextLine[],
+const mapBoundsToSource = (
+  bounds: Rectangle,
   phoneBounds: Rectangle,
   phoneCanvas: HTMLCanvasElement,
-): readonly Rectangle[] =>
-  lines
-    .filter((line) => line.text.length > 0)
-    .map((line) => ({
-      x: phoneBounds.x + (line.bounds.x / phoneCanvas.width) * phoneBounds.width,
-      y: phoneBounds.y + (line.bounds.y / phoneCanvas.height) * phoneBounds.height,
-      width: (line.bounds.width / phoneCanvas.width) * phoneBounds.width,
-      height: (line.bounds.height / phoneCanvas.height) * phoneBounds.height,
-    }))
+): Rectangle => ({
+  x: phoneBounds.x + (bounds.x / phoneCanvas.width) * phoneBounds.width,
+  y: phoneBounds.y + (bounds.y / phoneCanvas.height) * phoneBounds.height,
+  width: (bounds.width / phoneCanvas.width) * phoneBounds.width,
+  height: (bounds.height / phoneCanvas.height) * phoneBounds.height,
+})
 
 const clearAnalysisInterval = (): void => {
   if (state.intervalId !== undefined) {
@@ -206,7 +203,7 @@ export const initializeApp = (): void => {
         return
       }
 
-      renderDebugPreview(
+      renderZoomedDebugPreview(
         elements,
         uploadedImage.previewImageUrl,
         phoneDetection.bounds,
@@ -228,13 +225,15 @@ export const initializeApp = (): void => {
         },
       })
       logger.info('upload analysis result', result)
-      renderDebugPreview(
+      renderZoomedDebugPreview(
         elements,
         uploadedImage.previewImageUrl,
         phoneDetection.bounds,
         uploadedImage.naturalWidth,
         uploadedImage.naturalHeight,
-        mapOcrLineBoundsToSource(result.ocrLines, phoneDetection.bounds, phoneCanvas),
+        result.type === 'detected' && result.detection.bounds !== undefined
+          ? [mapBoundsToSource(result.detection.bounds, phoneDetection.bounds, phoneCanvas)]
+          : [],
       )
 
       if (result.type === 'detected') {

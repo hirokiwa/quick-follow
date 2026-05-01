@@ -4,7 +4,7 @@ import { noopDebugLogger } from './debug/logger'
 import { cropUpperProfileRegion } from './image-processing/phoneRegion'
 import { preprocessTextImage } from './image-processing/preprocess'
 import type { OcrWorker } from './ocr/tesseract'
-import { recognizeProfileLines } from './ocr/tesseract'
+import { recognizeProfileLinesFromCanvases } from './ocr/tesseract'
 import { scoreHandleCandidates } from './profile/handleScoring'
 import { createDetectionResult, hasXProfileKeyword } from './profile/xProfile'
 
@@ -38,14 +38,21 @@ export const analyzePhoneCanvas = async ({
   const processedCanvas = preprocessTextImage(profileCanvas)
 
   feedback('OCRを実行中')
-  const lines = await recognizeProfileLines(worker, processedCanvas)
+  const recognitionResult = await recognizeProfileLinesFromCanvases(worker, [profileCanvas, processedCanvas])
+  const lines = recognitionResult.lines
   const fullText = lines.map((line) => line.text).join('\n')
+  logger.info('OCR source canvas', {
+    width: recognitionResult.canvas.width,
+    height: recognitionResult.canvas.height,
+    boundsSource: 'tesseract-symbol-word-merged',
+  })
   logger.info('OCR lines', lines)
   logger.info('OCR line contents', lines.map((line) => ({
     index: line.index,
     text: line.text,
     confidence: line.confidence,
     bounds: line.bounds,
+    characterBounds: line.characterBounds,
   })))
   logger.info('OCR text', fullText)
   console.table(lines.map((line) => ({
@@ -60,7 +67,7 @@ export const analyzePhoneCanvas = async ({
 
   feedback('テキストを整形中')
   feedback('ID候補を抽出中')
-  const candidates = scoreHandleCandidates(lines, processedCanvas.height)
+  const candidates = scoreHandleCandidates(lines, recognitionResult.canvas.width, recognitionResult.canvas.height)
   logger.info('handle candidates', candidates)
 
   feedback('Xプロフィールか判定中')

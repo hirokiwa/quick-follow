@@ -59,6 +59,11 @@
   display: block;
   max-width: 100%;
   max-height: 100%;
+  transform-origin: var(--preview-origin-x, 50%) var(--preview-origin-y, 50%);
+  transform: scale(var(--preview-scale, 1)) translate(var(--preview-translate-x, 0), var(--preview-translate-y, 0));
+  transition:
+    transform 220ms ease-out,
+    filter 160ms ease-out;
 }
 
 .scanner__preview-image {
@@ -71,6 +76,33 @@
 .scanner__preview-overlay {
   position: absolute;
   inset: 0;
+}
+
+.scanner__preview-frame--zoomed .scanner__preview-overlay::before {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.62);
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% 100%,
+    0 100%,
+    0 var(--focus-top, 0),
+    var(--focus-left, 0) var(--focus-top, 0),
+    var(--focus-left, 0) calc(100% - var(--focus-bottom, 0)),
+    calc(100% - var(--focus-right, 0)) calc(100% - var(--focus-bottom, 0)),
+    calc(100% - var(--focus-right, 0)) var(--focus-top, 0),
+    0 var(--focus-top, 0)
+  );
+  content: "";
+  opacity: 0;
+  animation: preview-focus-fade 180ms ease-out forwards;
+}
+
+@keyframes preview-focus-fade {
+  to {
+    opacity: 1;
+  }
 }
 
 .scanner__preview-box {
