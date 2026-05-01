@@ -11,6 +11,7 @@ const hideDebugPreview = (elements: QuickFollowElements): void => {
   elements.previewOverlay.replaceChildren()
   elements.video.hidden = false
   elements.mockOverlay.hidden = false
+  elements.mockOverlay.classList.remove('scanner__mock-overlay--phone-detected')
 }
 
 const closeResultDialog = (elements: QuickFollowElements): void => {
@@ -125,6 +126,21 @@ export const renderStatus = (elements: QuickFollowElements, message: string): vo
   elements.statusText.textContent = message
 }
 
+export const renderPhoneSearching = (elements: QuickFollowElements): void => {
+  elements.mockOverlay.classList.remove('scanner__mock-overlay--phone-detected')
+  elements.statusText.textContent = 'スマホを検出中'
+}
+
+export const renderPhoneNotDetected = (elements: QuickFollowElements, message: string): void => {
+  elements.mockOverlay.classList.remove('scanner__mock-overlay--phone-detected')
+  elements.statusText.textContent = message
+}
+
+export const renderPhoneDetected = (elements: QuickFollowElements): void => {
+  elements.mockOverlay.classList.add('scanner__mock-overlay--phone-detected')
+  elements.statusText.textContent = 'スマホ領域を解析中'
+}
+
 export const renderDetection = (
   elements: QuickFollowElements,
   detection: DetectionResult,
@@ -191,6 +207,7 @@ export const renderZoomedDebugPreview = (
 }
 
 export const renderError = (elements: QuickFollowElements, message: string): void => {
+  elements.mockOverlay.classList.remove('scanner__mock-overlay--phone-detected')
   elements.startButton.disabled = false
   elements.stopButton.disabled = true
   elements.openLink.hidden = true

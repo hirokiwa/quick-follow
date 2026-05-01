@@ -7,7 +7,7 @@ import { cropPhoneRegionFromCanvas } from './image-processing/phoneRegion'
 import { createCanvasFromFile, createCanvasFromVideo } from './image-processing/upload'
 import { createOcrWorker, terminateOcrWorker } from './ocr/tesseract'
 import { getQuickFollowElements } from './ui/elements'
-import { renderAnalyzing, renderDebugPreview, renderDetection, renderError, renderIdle, renderPreparing, renderScanning, renderStartDialog, renderStatus, renderZoomedDebugPreview } from './ui/render'
+import { renderAnalyzing, renderDebugPreview, renderDetection, renderError, renderIdle, renderPhoneDetected, renderPhoneNotDetected, renderPhoneSearching, renderPreparing, renderScanning, renderStartDialog, renderStatus, renderZoomedDebugPreview } from './ui/render'
 
 type AppState = {
   stream: MediaStream | undefined
@@ -77,17 +77,17 @@ export const initializeApp = (): void => {
     state.isAnalyzing = true
 
     try {
-      renderStatus(elements, 'スマホを検出中')
+      renderPhoneSearching(elements)
       const phoneDetection = detectLargestPhone(state.detector, elements.video, performance.now())
       logger.info('phone detection', phoneDetection)
 
       if (phoneDetection === undefined) {
-        renderStatus(elements, 'スマホが見つかりません')
+        renderPhoneNotDetected(elements, 'スマホが見つかりません')
         return
       }
 
       logger.info('phone detected, analyze current frame', phoneDetection)
-      renderStatus(elements, 'スマホ領域を解析中')
+      renderPhoneDetected(elements)
       const capturedImage = createCanvasFromVideo(elements.video)
       const phoneCanvas = cropPhoneRegionFromCanvas(capturedImage.sourceCanvas, phoneDetection.bounds)
       renderStatus(elements, '透視補正をスキップ中')
@@ -114,7 +114,7 @@ export const initializeApp = (): void => {
         )
         renderDetection(elements, result.detection)
       } else {
-        renderStatus(elements, '文字を検出できませんでした')
+        renderPhoneNotDetected(elements, '文字を検出できませんでした')
       }
     } catch (error) {
       logger.error('camera analysis error', error)

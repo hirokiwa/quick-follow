@@ -106,7 +106,12 @@
   object-fit: contain;
   opacity: 0.42;
   pointer-events: none;
+  transition: opacity 160ms ease;
   user-select: none;
+}
+
+.scanner__mock-overlay--phone-detected {
+  opacity: 0.16;
 }
 
 .scanner__status {
