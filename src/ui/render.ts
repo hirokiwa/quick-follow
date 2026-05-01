@@ -14,6 +14,12 @@ const hideDebugPreview = (elements: QuickFollowElements): void => {
   elements.guide.hidden = false
 }
 
+const closeResultDialog = (elements: QuickFollowElements): void => {
+  if (elements.resultDialog.open) {
+    elements.resultDialog.close()
+  }
+}
+
 const createPreviewBox = (
   rectangle: Rectangle,
   naturalWidth: number,
@@ -65,6 +71,7 @@ const calculateZoomTranslation = (
 }
 
 export const renderIdle = (elements: QuickFollowElements): void => {
+  closeResultDialog(elements)
   hideDebugPreview(elements)
   elements.startButton.disabled = false
   elements.stopButton.disabled = true
@@ -73,6 +80,7 @@ export const renderIdle = (elements: QuickFollowElements): void => {
 }
 
 export const renderScanning = (elements: QuickFollowElements): void => {
+  closeResultDialog(elements)
   hideDebugPreview(elements)
   elements.startButton.disabled = true
   elements.stopButton.disabled = false
@@ -81,6 +89,7 @@ export const renderScanning = (elements: QuickFollowElements): void => {
 }
 
 export const renderAnalyzing = (elements: QuickFollowElements): void => {
+  closeResultDialog(elements)
   elements.startButton.disabled = true
   elements.stopButton.disabled = true
   elements.openLink.hidden = true
@@ -88,6 +97,7 @@ export const renderAnalyzing = (elements: QuickFollowElements): void => {
 }
 
 export const renderPreparing = (elements: QuickFollowElements): void => {
+  closeResultDialog(elements)
   hideDebugPreview(elements)
   elements.startButton.disabled = true
   elements.stopButton.disabled = false
@@ -107,7 +117,12 @@ export const renderDetection = (
   elements.stopButton.disabled = true
   elements.openLink.hidden = false
   elements.openLink.href = detection.profileUrl
+  elements.resultHandle.textContent = detection.handle
+  elements.resultOpenLink.href = detection.profileUrl
   elements.statusText.textContent = `${detection.handle} を検出しました`
+  if (!elements.resultDialog.open) {
+    elements.resultDialog.showModal()
+  }
 }
 
 export const renderDebugPreview = (
