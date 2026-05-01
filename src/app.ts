@@ -198,7 +198,7 @@ export const initializeApp = (): void => {
 
       renderStatus(elements, '画像を読み込み中')
       const uploadedImage = await createCanvasFromFile(file)
-      renderDebugPreview(elements, uploadedImage.previewImageUrl, undefined, uploadedImage.naturalWidth, uploadedImage.naturalHeight)
+      renderDebugPreview(elements, uploadedImage.previewImageUrl)
 
       renderStatus(elements, 'MediaPipeを準備中')
       const detector = await ensureImagePhoneDetector()
@@ -207,7 +207,7 @@ export const initializeApp = (): void => {
       logger.info('upload phone detection', phoneDetection)
 
       if (phoneDetection === undefined) {
-        renderDebugPreview(elements, uploadedImage.previewImageUrl, undefined, uploadedImage.naturalWidth, uploadedImage.naturalHeight)
+        renderDebugPreview(elements, uploadedImage.previewImageUrl)
         renderError(elements, 'スマホが見つかりません')
         return
       }

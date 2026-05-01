@@ -31,23 +31,6 @@ export const renderStartDialog = (elements: QuickFollowElements): void => {
   }
 }
 
-const createPreviewBox = (
-  rectangle: Rectangle,
-  naturalWidth: number,
-  naturalHeight: number,
-  className: string,
-): HTMLElement => {
-  const box = document.createElement('span')
-
-  box.className = className
-  box.style.left = `${(rectangle.x / naturalWidth) * 100}%`
-  box.style.top = `${(rectangle.y / naturalHeight) * 100}%`
-  box.style.width = `${(rectangle.width / naturalWidth) * 100}%`
-  box.style.height = `${(rectangle.height / naturalHeight) * 100}%`
-
-  return box
-}
-
 const calculateZoomScale = (
   previewElement: HTMLElement,
   previewImage: HTMLImageElement,
@@ -161,9 +144,6 @@ export const renderDetection = (
 export const renderDebugPreview = (
   elements: QuickFollowElements,
   imageUrl: string,
-  bounds: Rectangle | undefined,
-  naturalWidth: number,
-  naturalHeight: number,
   preserveZoom = false,
 ): void => {
   elements.preview.hidden = false
@@ -177,13 +157,7 @@ export const renderDebugPreview = (
   }
 
   elements.previewImage.src = imageUrl
-  elements.previewOverlay.replaceChildren(
-    ...[
-      bounds === undefined
-        ? []
-        : [createPreviewBox(bounds, naturalWidth, naturalHeight, 'scanner__preview-box scanner__preview-box--phone')],
-    ].flat(),
-  )
+  elements.previewOverlay.replaceChildren()
 }
 
 export const renderZoomedDebugPreview = (
@@ -193,7 +167,7 @@ export const renderZoomedDebugPreview = (
   naturalWidth: number,
   naturalHeight: number,
 ): void => {
-  renderDebugPreview(elements, imageUrl, bounds, naturalWidth, naturalHeight, true)
+  renderDebugPreview(elements, imageUrl, true)
 
   void waitForImageLayout(elements.previewImage).then(() => {
     if (elements.previewImage.src !== imageUrl) {
