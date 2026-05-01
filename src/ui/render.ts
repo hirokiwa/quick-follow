@@ -41,8 +41,8 @@ const calculateZoomScale = (
   const previewRectangle = previewElement.getBoundingClientRect()
   const displayedPhoneWidth = (bounds.width / naturalWidth) * Math.max(1, previewImage.offsetWidth)
   const displayedPhoneHeight = (bounds.height / naturalHeight) * Math.max(1, previewImage.offsetHeight)
-  const widthScale = (previewRectangle.width * 0.92) / Math.max(1, displayedPhoneWidth)
-  const heightScale = (previewRectangle.height * 0.92) / Math.max(1, displayedPhoneHeight)
+  const widthScale = previewRectangle.width / Math.max(1, displayedPhoneWidth)
+  const heightScale = previewRectangle.height / Math.max(1, displayedPhoneHeight)
 
   return Math.max(1, Math.min(widthScale, heightScale))
 }
@@ -55,10 +55,12 @@ const calculateZoomTranslation = (
 ): { readonly x: number; readonly y: number } => {
   const focusCenterX = ((bounds.x + bounds.width / 2) / naturalWidth) * Math.max(1, previewImage.offsetWidth)
   const focusCenterY = ((bounds.y + bounds.height / 2) / naturalHeight) * Math.max(1, previewImage.offsetHeight)
+  const imageCenterX = previewImage.offsetWidth / 2
+  const imageCenterY = previewImage.offsetHeight / 2
 
   return {
-    x: previewImage.offsetWidth / 2 - focusCenterX,
-    y: previewImage.offsetHeight / 2 - focusCenterY,
+    x: imageCenterX - focusCenterX,
+    y: imageCenterY - focusCenterY,
   }
 }
 
@@ -149,19 +151,17 @@ export const renderZoomedDebugPreview = (
   naturalHeight: number,
   ocrLineBounds: readonly Rectangle[] = [],
 ): void => {
-  const centerX = ((bounds.x + bounds.width / 2) / naturalWidth) * 100
-  const centerY = ((bounds.y + bounds.height / 2) / naturalHeight) * 100
   renderDebugPreview(elements, imageUrl, bounds, naturalWidth, naturalHeight, ocrLineBounds, true)
 
   requestAnimationFrame(() => {
     const scale = calculateZoomScale(elements.preview, elements.previewImage, bounds, naturalWidth, naturalHeight)
     const translation = calculateZoomTranslation(elements.previewImage, bounds, naturalWidth, naturalHeight)
 
-    elements.previewFrame.style.setProperty('--preview-origin-x', `${centerX}%`)
-    elements.previewFrame.style.setProperty('--preview-origin-y', `${centerY}%`)
+    elements.previewFrame.style.setProperty('--preview-origin-x', '50%')
+    elements.previewFrame.style.setProperty('--preview-origin-y', '50%')
     elements.previewFrame.style.setProperty('--preview-scale', `${scale}`)
-    elements.previewFrame.style.setProperty('--preview-translate-x', `${translation.x}px`)
-    elements.previewFrame.style.setProperty('--preview-translate-y', `${translation.y}px`)
+    elements.previewFrame.style.setProperty('--preview-translate-x', `${translation.x * scale}px`)
+    elements.previewFrame.style.setProperty('--preview-translate-y', `${translation.y * scale}px`)
     elements.previewFrame.style.setProperty('--focus-left', `${(bounds.x / naturalWidth) * 100}%`)
     elements.previewFrame.style.setProperty('--focus-top', `${(bounds.y / naturalHeight) * 100}%`)
     elements.previewFrame.style.setProperty('--focus-right', `${100 - ((bounds.x + bounds.width) / naturalWidth) * 100}%`)

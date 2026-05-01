@@ -60,7 +60,7 @@
   max-width: 100%;
   max-height: 100%;
   transform-origin: var(--preview-origin-x, 50%) var(--preview-origin-y, 50%);
-  transform: scale(var(--preview-scale, 1)) translate(var(--preview-translate-x, 0), var(--preview-translate-y, 0));
+  transform: translate(var(--preview-translate-x, 0), var(--preview-translate-y, 0)) scale(var(--preview-scale, 1));
   transition:
     transform 220ms ease-out,
     filter 160ms ease-out;
