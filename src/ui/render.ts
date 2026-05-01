@@ -164,7 +164,6 @@ export const renderDebugPreview = (
   bounds: Rectangle | undefined,
   naturalWidth: number,
   naturalHeight: number,
-  ocrLineBounds: readonly Rectangle[] = [],
   preserveZoom = false,
 ): void => {
   elements.preview.hidden = false
@@ -183,9 +182,6 @@ export const renderDebugPreview = (
       bounds === undefined
         ? []
         : [createPreviewBox(bounds, naturalWidth, naturalHeight, 'scanner__preview-box scanner__preview-box--phone')],
-      ocrLineBounds.map((lineBounds) =>
-        createPreviewBox(lineBounds, naturalWidth, naturalHeight, 'scanner__preview-box scanner__preview-box--ocr-line'),
-      ),
     ].flat(),
   )
 }
@@ -196,9 +192,8 @@ export const renderZoomedDebugPreview = (
   bounds: Rectangle,
   naturalWidth: number,
   naturalHeight: number,
-  ocrLineBounds: readonly Rectangle[] = [],
 ): void => {
-  renderDebugPreview(elements, imageUrl, bounds, naturalWidth, naturalHeight, ocrLineBounds, true)
+  renderDebugPreview(elements, imageUrl, bounds, naturalWidth, naturalHeight, true)
 
   void waitForImageLayout(elements.previewImage).then(() => {
     if (elements.previewImage.src !== imageUrl) {

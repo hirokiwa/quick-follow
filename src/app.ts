@@ -6,7 +6,6 @@ import { createPhoneDetector, detectLargestPhone, detectLargestPhoneInImage } fr
 import { cropPhoneRegionFromCanvas } from './image-processing/phoneRegion'
 import { createCanvasFromFile, createCanvasFromVideo } from './image-processing/upload'
 import { createOcrWorker, terminateOcrWorker } from './ocr/tesseract'
-import type { Rectangle } from './types'
 import { getQuickFollowElements } from './ui/elements'
 import { renderAnalyzing, renderDebugPreview, renderDetection, renderError, renderIdle, renderPreparing, renderScanning, renderStartDialog, renderStatus, renderZoomedDebugPreview } from './ui/render'
 
@@ -32,17 +31,6 @@ const state: AppState = {
   isAnalyzing: false,
   shouldResumeAfterResultDialogClose: false,
 }
-
-const mapBoundsToSource = (
-  bounds: Rectangle,
-  phoneBounds: Rectangle,
-  phoneCanvas: HTMLCanvasElement,
-): Rectangle => ({
-  x: phoneBounds.x + (bounds.x / phoneCanvas.width) * phoneBounds.width,
-  y: phoneBounds.y + (bounds.y / phoneCanvas.height) * phoneBounds.height,
-  width: (bounds.width / phoneCanvas.width) * phoneBounds.width,
-  height: (bounds.height / phoneCanvas.height) * phoneBounds.height,
-})
 
 const clearAnalysisInterval = (): void => {
   if (state.intervalId !== undefined) {
@@ -123,9 +111,6 @@ export const initializeApp = (): void => {
           phoneDetection.bounds,
           capturedImage.naturalWidth,
           capturedImage.naturalHeight,
-          result.detection.bounds === undefined
-            ? []
-            : [mapBoundsToSource(result.detection.bounds, phoneDetection.bounds, phoneCanvas)],
         )
         renderDetection(elements, result.detection)
       } else {
@@ -255,9 +240,6 @@ export const initializeApp = (): void => {
         phoneDetection.bounds,
         uploadedImage.naturalWidth,
         uploadedImage.naturalHeight,
-        result.type === 'detected' && result.detection.bounds !== undefined
-          ? [mapBoundsToSource(result.detection.bounds, phoneDetection.bounds, phoneCanvas)]
-          : [],
       )
 
       if (result.type === 'detected') {

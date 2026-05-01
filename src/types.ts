@@ -9,7 +9,6 @@ export type DetectionResult = {
   readonly handle: string
   readonly profileUrl: string
   readonly profileConfirmed: boolean
-  readonly bounds: Rectangle | undefined
 }
 
 export type Feedback = (message: string) => void

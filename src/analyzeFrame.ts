@@ -89,7 +89,7 @@ export const analyzePhoneCanvas = async ({
     }
   }
 
-  const detection = createDetectionResult(bestCandidate.handle, profileConfirmed, bestCandidate.line.bounds)
+  const detection = createDetectionResult(bestCandidate.handle, profileConfirmed)
 
   logger.info('result', detection)
   logger.groupEnd()

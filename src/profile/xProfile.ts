@@ -1,5 +1,4 @@
 import type { DetectionResult } from '../types'
-import type { Rectangle } from '../types'
 
 const xHandlePattern = /^@[A-Za-z0-9_]{1,15}$/
 
@@ -25,10 +24,8 @@ export const hasXProfileKeyword = (text: string): boolean =>
 export const createDetectionResult = (
   handle: string,
   profileConfirmed: boolean,
-  bounds?: Rectangle,
 ): DetectionResult => ({
   handle,
   profileUrl: `https://x.com/${handle.slice(1)}`,
   profileConfirmed,
-  bounds,
 })
