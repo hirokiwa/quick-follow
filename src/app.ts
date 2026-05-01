@@ -17,6 +17,7 @@ type AppState = {
   detector: ObjectDetector | undefined
   imageDetector: ObjectDetector | undefined
   isAnalyzing: boolean
+  shouldResumeAfterResultDialogClose: boolean
 }
 
 const analysisIntervalMilliseconds = 750
@@ -29,6 +30,7 @@ const state: AppState = {
   detector: undefined,
   imageDetector: undefined,
   isAnalyzing: false,
+  shouldResumeAfterResultDialogClose: false,
 }
 
 const mapBoundsToSource = (
@@ -113,6 +115,7 @@ export const initializeApp = (): void => {
       logger.info('camera analysis result', result)
 
       if (result.type === 'detected') {
+        state.shouldResumeAfterResultDialogClose = true
         freezeScanning()
         renderZoomedDebugPreview(
           elements,
@@ -258,6 +261,7 @@ export const initializeApp = (): void => {
       )
 
       if (result.type === 'detected') {
+        state.shouldResumeAfterResultDialogClose = true
         renderDetection(elements, result.detection)
       } else {
         renderError(elements, 'IDを検出できませんでした')
@@ -281,6 +285,15 @@ export const initializeApp = (): void => {
   elements.stopButton.addEventListener('click', () => {
     stopScanning()
     renderIdle(elements)
+  })
+  elements.resultCloseButton.addEventListener('click', () => {
+    elements.resultDialog.close()
+  })
+  elements.resultDialog.addEventListener('close', () => {
+    if (state.shouldResumeAfterResultDialogClose) {
+      state.shouldResumeAfterResultDialogClose = false
+      void startScanning()
+    }
   })
   elements.uploadInput.addEventListener('change', () => {
     void analyzeUploadedFile(elements.uploadInput.files?.[0])
